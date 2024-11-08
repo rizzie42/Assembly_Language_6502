@@ -1,0 +1,38 @@
+LDA #$00
+STA $202 ; store value zero into location 202
+LDA #$00
+STA $203 ; store value zero into location 203 
+
+LDA #$80 ; load A with a number 
+STA $200 ; store A into RAM location 200H 
+LDA #$04 ; load A with another number 
+STA $201 ; store A into RAM location 201H
+
+
+; multiply the value in location 200H and 201H 
+; store the lower bit at 202H and upper bit at 203H
+CLC ; clear carry flag 
+LDA $202
+LDX $201 ; load X with multiplier
+BEQ DONE ; if multiplier is zero, then it jumps to DONE 
+
+; start multiply 
+LOOP: 
+    CLC ; clear carry flag 
+    ADC $200 ; add multiplicand with value of multiplier
+    BCS UPPER_INCREMENT ; if there is carry bit, increment upper bit
+    STA $202 ; store lower bit value to location 202H 
+    DEX ; decrement X as the counter of how many times we should add the multiplier 
+    BNE LOOP ; if X is not zero, repeat loop
+
+UPPER_INCREMENT: 
+    INC $203 ; increment upper bit 
+    CLC ; clear carry flag
+    STA $202 ; store A to the lower bit location 202H 
+    DEX ; decement X
+    BNE LOOP ; if X is not zero, go back to the loop
+    BEQ DONE ; if X is zero, end the loop
+
+DONE: ; End the loop
+LDA $202
+LDY $203

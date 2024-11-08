@@ -1,0 +1,31 @@
+; Use the 6502 emulator to write a program that copies itself into RAM just beynd its original location.
+; Your compiled program will start at location $600 in RAM. 
+LDA #$01
+TXA
+LDA #$21
+TYA
+LOOP:
+LDA $600
+STA $601, Y
+LDA $600, X
+INX
+CPY X
+BCC LOOP
+
+; try 2 
+LDX #$00
+LOOP1:
+LDA $600, X
+STA $610, X
+INX 
+CPX #$10
+BNE LOOP1
+JMP $610
+
+; final 
+LDX #$00 ; Load X with value 0
+LOOP: ; LOOP start
+LDA $600, X ; Load our program's first meory to A
+STA $60c, X ; store A to the copying address 
+INX ; increase X 
+JMP LOOP ; Jump to the Loop

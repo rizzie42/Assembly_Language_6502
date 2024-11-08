@@ -1,0 +1,39 @@
+; 6502 
+; preloads memory from location 00 to 1F with the values. 
+; Find the checksum of the numbers and store it in location 20 (higher byte) and 21 (lower byte)
+
+CLC ; clear carry flag 
+; load numbers into location 00 to 1f 
+LDX #$1f ; load X with value 1f 
+LOAD_LOOP:
+    TXA ; transfer data from X to A
+    STA $00, X ; store value in A to location 00 + X 
+    DEX ; decrease X 
+    BNE LOAD_LOOP ; if X is not zero, repeat loop
+    BEQ DONE_SUM
+DONE_SUM: 
+LDA #$00
+STA $20
+STA $21
+CLC ; clear carry flag 
+; sum starts
+LDX #$1f ; load counter 
+
+LOOP:
+    LDA $00, X; load location X to A
+    ADC $21 ; add the value in location 20 to A
+    BCS UPPER_INCREMENT ; if there is carry bit, increment upper bit
+    STA $21 ;store lower bit in location 21 
+    DEX ; decrease counter
+    BNE LOOP ; if X is not zero, repeat loop
+    BEQ DONE ; if X is zero, end the loop
+
+UPPER_INCREMENT: 
+    INC $20 ; increment upper bit 
+    CLC ; clear carry flag
+    STA $21
+    DEX ; decement counter
+    BNE LOOP ; if X is not zero, go back to the loop
+    BEQ DONE ; if X is zero, end the loop
+
+DONE: ; End the loop
